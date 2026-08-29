@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The Internet Wall</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;background:#07080a;color:#f4f5f7;font-family:system-ui,-apple-system,Segoe UI,sans-serif}
+body{overflow:hidden}.page{height:100vh;display:flex;flex-direction:column;padding:18px}
+header{display:flex;justify-content:space-between;align-items:center;gap:12px;max-width:1500px;width:100%;margin:auto auto 12px}
+.brand{font-size:14px;font-weight:800;letter-spacing:.13em}.tag{font-size:11px;color:#8e949f;margin-top:3px}
+.live{font-size:9px;letter-spacing:.14em;color:#8e949f;border:1px solid #25282e;padding:7px 10px;border-radius:999px}.dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#74f09a;margin-right:6px}
+.hero{width:100%;max-width:1500px;margin:0 auto 12px;display:flex;justify-content:space-between;align-items:end}
+.eyebrow{font-size:9px;letter-spacing:.2em;color:#8e949f;margin:0 0 7px}h1{font-size:clamp(30px,5vw,58px);line-height:.95;letter-spacing:-.045em;margin:0}.intro{font-size:12px;color:#8e949f;margin:10px 0 0}
+.count{text-align:right}.count b{display:block;font-size:24px}.count span{font-size:10px;color:#8e949f}
+.toolbar{width:100%;max-width:1500px;margin:0 auto 8px;display:flex;justify-content:space-between;align-items:center}.hint{font-size:10px;color:#8e949f}.buttons{display:flex;gap:5px}.buttons button{background:#171a20;color:#fff;border:1px solid #2a2d33;border-radius:7px;height:30px;min-width:32px}.buttons button:active{background:#272b32}
+.wall{position:relative;flex:1;min-height:300px;width:100%;max-width:1500px;margin:auto;overflow:hidden;border:1px solid #25282e;border-radius:13px;background:#090a0d;touch-action:none}
+canvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab}.wall.drag canvas{cursor:grabbing}
+.info{position:absolute;left:14px;top:14px;width:230px;padding:14px;background:rgba(13,15,19,.95);border:1px solid #2a2d33;border-radius:9px;box-shadow:0 15px 45px #0008}
+.info small{font-size:8px;letter-spacing:.16em;color:#8e949f}.id{font-size:22px;font-weight:800;margin-top:4px}.coords{font-size:10px;color:#8e949f}.note{font-size:10px;color:#8e949f;line-height:1.4;margin:12px 0}.info button{width:100%;height:30px;border:1px solid #30343b;background:#171a20;color:#fff;border-radius:6px}
+.zoom{position:absolute;right:10px;bottom:10px;font-size:9px;color:#8e949f;background:#0009;padding:6px 8px;border-radius:6px;border:1px solid #25282e}
+footer{font-size:9px;color:#555b65;text-align:center;padding:7px 0 0}
+@media(max-width:650px){.page{padding:11px}.hero{display:block}.count{text-align:left;margin-top:8px}.intro{max-width:90%}.hint{max-width:190px;line-height:1.35}.wall{min-height:0}.info{width:210px}}
+</style>
+</head>
+<body>
+<div class="page">
+<header><div><div class="brand">THE INTERNET WALL</div><div class="tag">Own a piece of the Internet.</div></div><div class="live"><i class="dot"></i>LIVE PROTOTYPE</div></header>
+<section class="hero"><div><p class="eyebrow">1,000,000 DIGITAL PARCELS</p><h1>A wall built by the Internet.</h1><p class="intro">Explore the prototype. Zoom, move around and select a parcel.</p></div><div class="count"><b>0</b><span>/ 1,000,000 claimed</span></div></section>
+<div class="toolbar"><div class="hint">Glisse pour explorer · Pince pour zoomer · Touche une parcelle</div><div class="buttons"><button id="plus">+</button><button id="minus">−</button><button id="reset">Reset</button></div></div>
+<div class="wall" id="wall"><canvas id="canvas"></canvas><div class="zoom" id="zoom">72%</div></div>
+<footer>Prototype v0.1 · The Internet Wall</footer>
+</div>
+<script>
+const GRID=1000, c=document.getElementById('canvas'), wrap=document.getElementById('wall'), ctx=c.getContext('2d');
+let s={z:.72,x:0,y:0,down:false,lx:0,ly:0,moved:0}, selected=null;
+function size(){let r=wrap.getBoundingClientRect(),d=Math.min(devicePixelRatio||1,2);c.width=r.width*d;c.height=r.height*d;draw()}
+function pos(){let r=wrap.getBoundingClientRect(),w=r.width,h=r.height,ww=GRID*s.z,hh=GRID*s.z;return{x:(w-ww)/2+s.x,y:(h-hh)/2+s.y}}
+function draw(){
+ let r=wrap.getBoundingClientRect(),d=Math.min(devicePixelRatio||1,2),w=r.width,h=r.height;
+ ctx.setTransform(d,0,0,d,0,0);ctx.clearRect(0,0,w,h);ctx.fillStyle='#090a0d';ctx.fillRect(0,0,w,h);
+ let p=pos(),cell=s.z;ctx.fillStyle='#111318';ctx.fillRect(p.x,p.y,GRID*cell,GRID*cell);
+ ctx.strokeStyle='rgba(255,255,255,.07)';ctx.lineWidth=1;ctx.beginPath();
+ let step=cell>=2.5?1:Math.max(10,Math.round(40/cell));
+ for(let i=0;i<=GRID;i+=step){let x=p.x+i*cell;ctx.moveTo(x,Math.max(0,p.y));ctx.lineTo(x,Math.min(h,p.y+GRID*cell));let y=p.y+i*cell;ctx.moveTo(Math.max(0,p.x),y);ctx.lineTo(Math.min(w,p.x+GRID*cell),y)}ctx.stroke();
+ const demo=[{x:112,y:178,w:18,h:10,t:'JB'},{x:420,y:260,w:30,h:12,t:'THE WALL'},{x:735,y:620,w:22,h:14,t:'∞'}];
+ for(const q of demo){let x=p.x+q.x*cell,y=p.y+q.y*cell;ctx.fillStyle='rgba(255,255,255,.12)';ctx.fillRect(x,y,q.w*cell,q.h*cell);if(cell>=3.5){ctx.fillStyle='rgba(255,255,255,.55)';ctx.font=Math.max(9,Math.min(18,cell*2.5))+'px system-ui';ctx.fillText(q.t,x+5,y+Math.min(q.h*cell-4,18))}}
+ if(selected){let x=p.x+selected.x*cell,y=p.y+selected.y*cell;ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.strokeRect(x+1,y+1,Math.max(cell-2,2),Math.max(cell-2,2))}
+ ctx.strokeStyle='rgba(255,255,255,.35)';ctx.strokeRect(p.x+.5,p.y+.5,GRID*cell-1,GRID*cell-1);document.getElementById('zoom').textContent=Math.round(s.z*100)+'%';
+}
+function cellAt(cx,cy){let r=wrap.getBoundingClientRect(),p=pos(),x=Math.floor((cx-r.left-p.x)/s.z),y=Math.floor((cy-r.top-p.y)/s.z);return x>=0&&y>=0&&x<GRID&&y<GRID?{x,y}:null}
+c.addEventListener('pointerdown',e=>{s.down=true;s.lx=e.clientX;s.ly=e.clientY;s.moved=0;c.setPointerCapture(e.pointerId);wrap.classList.add('drag')});
+c.addEventListener('pointermove',e=>{if(!s.down)return;let dx=e.clientX-s.lx,dy=e.clientY-s.ly;s.x+=dx;s.y+=dy;s.lx=e.clientX;s.ly=e.clientY;s.moved+=Math.abs(dx)+Math.abs(dy);draw()});
+c.addEventListener('pointerup',e=>{if(!s.down)return;s.down=false;wrap.classList.remove('drag');if(s.moved<8){selected=cellAt(e.clientX,e.clientY);showInfo()}});
+c.addEventListener('pointercancel',()=>{s.down=false;wrap.classList.remove('drag')});
+c.addEventListener('wheel',e=>{e.preventDefault();let before=cellAt(e.clientX,e.clientY),old=s.z,r=wrap.getBoundingClientRect(),p=pos(),factor=e.deltaY<0?1.18:1/1.18;s.z=Math.max(.55,Math.min(24,s.z*factor));if(before){let px=p.x+(before.x+.5)*old,py=p.y+(before.y+.5)*old,nw=GRID*s.z,nh=GRID*s.z,bx=(r.width-nw)/2,by=(r.height-nh)/2;s.x=e.clientX-r.left-bx-(px-p.x)*(s.z/old);s.y=e.clientY-r.top-by-(py-p.y)*(s.z/old)}draw()},{passive:false});
+function showInfo(){let old=document.querySelector('.info');if(old)old.remove();if(!selected)return;let d=document.createElement('div');d.className='info';let n=selected.y*GRID+selected.x+1;d.innerHTML='<small>PARCEL SELECTED</small><div class="id">#'+String(n).padStart(7,'0')+'</div><div class="coords">X '+(selected.x+1)+' · Y '+(selected.y+1)+'</div><div class="note">Available in the future version.</div><button>Fermer</button>';d.querySelector('button').onclick=()=>{d.remove();selected=null;draw()};wrap.appendChild(d);draw()}
+document.getElementById('plus').onclick=()=>{s.z=Math.min(24,s.z*1.25);draw()};document.getElementById('minus').onclick=()=>{s.z=Math.max(.55,s.z/1.25);draw()};document.getElementById('reset').onclick=()=>{s={...s,z:.72,x:0,y:0,down:false};selected=null;document.querySelector('.info')?.remove();draw()};
+window.addEventListener('resize',size);size();
+</script>
+</body>
+</html>
