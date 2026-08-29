@@ -2,61 +2,181 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>The Internet Wall</title>
 <style>
-*{box-sizing:border-box}html,body{margin:0;background:#07080a;color:#f4f5f7;font-family:system-ui,-apple-system,Segoe UI,sans-serif}
-body{overflow:hidden}.page{height:100vh;display:flex;flex-direction:column;padding:18px}
-header{display:flex;justify-content:space-between;align-items:center;gap:12px;max-width:1500px;width:100%;margin:auto auto 12px}
-.brand{font-size:14px;font-weight:800;letter-spacing:.13em}.tag{font-size:11px;color:#8e949f;margin-top:3px}
-.live{font-size:9px;letter-spacing:.14em;color:#8e949f;border:1px solid #25282e;padding:7px 10px;border-radius:999px}.dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#74f09a;margin-right:6px}
-.hero{width:100%;max-width:1500px;margin:0 auto 12px;display:flex;justify-content:space-between;align-items:end}
-.eyebrow{font-size:9px;letter-spacing:.2em;color:#8e949f;margin:0 0 7px}h1{font-size:clamp(30px,5vw,58px);line-height:.95;letter-spacing:-.045em;margin:0}.intro{font-size:12px;color:#8e949f;margin:10px 0 0}
-.count{text-align:right}.count b{display:block;font-size:24px}.count span{font-size:10px;color:#8e949f}
-.toolbar{width:100%;max-width:1500px;margin:0 auto 8px;display:flex;justify-content:space-between;align-items:center}.hint{font-size:10px;color:#8e949f}.buttons{display:flex;gap:5px}.buttons button{background:#171a20;color:#fff;border:1px solid #2a2d33;border-radius:7px;height:30px;min-width:32px}.buttons button:active{background:#272b32}
-.wall{position:relative;flex:1;min-height:300px;width:100%;max-width:1500px;margin:auto;overflow:hidden;border:1px solid #25282e;border-radius:13px;background:#090a0d;touch-action:none}
+:root{--bg:#07080a;--panel:#101217;--line:rgba(255,255,255,.11);--muted:#8e949f;--text:#f4f5f7}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,sans-serif}
+body{overflow:hidden}.page{height:100vh;display:flex;flex-direction:column;padding:14px}
+header{display:flex;justify-content:space-between;align-items:center;gap:12px;width:100%;max-width:1500px;margin:0 auto 10px}
+.brand{font-size:14px;font-weight:850;letter-spacing:.13em}.tag{font-size:11px;color:var(--muted);margin-top:3px}
+.live{font-size:9px;letter-spacing:.14em;color:var(--muted);border:1px solid #25282e;padding:7px 10px;border-radius:999px;white-space:nowrap}.dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#74f09a;margin-right:6px}
+.hero{width:100%;max-width:1500px;margin:0 auto 10px;display:flex;justify-content:space-between;align-items:end;gap:20px}
+.eyebrow{font-size:9px;letter-spacing:.2em;color:var(--muted);margin:0 0 7px}h1{font-size:clamp(30px,5vw,58px);line-height:.95;letter-spacing:-.045em;margin:0}.intro{font-size:12px;color:var(--muted);margin:10px 0 0}
+.count{text-align:right;white-space:nowrap}.count b{display:block;font-size:24px}.count span{font-size:10px;color:var(--muted)}
+.toolbar{width:100%;max-width:1500px;margin:0 auto 7px;display:flex;justify-content:space-between;align-items:center;gap:10px}.hint{font-size:10px;color:var(--muted)}.buttons{display:flex;gap:5px}.buttons button{background:#171a20;color:#fff;border:1px solid #2a2d33;border-radius:7px;height:30px;min-width:32px;font-size:15px}.buttons .reset{padding:0 10px;font-size:10px}
+.wall{position:relative;flex:1;min-height:280px;width:100%;max-width:1500px;margin:auto;overflow:hidden;border:1px solid #25282e;border-radius:13px;background:#090a0d;touch-action:none}
 canvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab}.wall.drag canvas{cursor:grabbing}
-.info{position:absolute;left:14px;top:14px;width:230px;padding:14px;background:rgba(13,15,19,.95);border:1px solid #2a2d33;border-radius:9px;box-shadow:0 15px 45px #0008}
-.info small{font-size:8px;letter-spacing:.16em;color:#8e949f}.id{font-size:22px;font-weight:800;margin-top:4px}.coords{font-size:10px;color:#8e949f}.note{font-size:10px;color:#8e949f;line-height:1.4;margin:12px 0}.info button{width:100%;height:30px;border:1px solid #30343b;background:#171a20;color:#fff;border-radius:6px}
-.zoom{position:absolute;right:10px;bottom:10px;font-size:9px;color:#8e949f;background:#0009;padding:6px 8px;border-radius:6px;border:1px solid #25282e}
-footer{font-size:9px;color:#555b65;text-align:center;padding:7px 0 0}
-@media(max-width:650px){.page{padding:11px}.hero{display:block}.count{text-align:left;margin-top:8px}.intro{max-width:90%}.hint{max-width:190px;line-height:1.35}.wall{min-height:0}.info{width:210px}}
+.selection{position:absolute;left:13px;top:13px;width:min(255px,calc(100% - 26px));padding:14px;background:rgba(13,15,19,.96);border:1px solid #2b2f36;border-radius:10px;box-shadow:0 18px 50px #0009;z-index:4}
+.selection small{font-size:8px;letter-spacing:.16em;color:var(--muted)}.id{font-size:22px;font-weight:850;margin-top:4px}.coords{font-size:10px;color:var(--muted)}
+.badge{display:inline-block;margin-top:10px;font-size:9px;padding:5px 7px;border-radius:999px;background:#171a20;border:1px solid #30343b}.desc{font-size:10px;color:var(--muted);line-height:1.45;margin:11px 0}.selection button{width:100%;height:30px;border:1px solid #30343b;background:#171a20;color:#fff;border-radius:6px}
+.zoom{position:absolute;right:10px;bottom:10px;font-size:9px;color:var(--muted);background:#0009;padding:6px 8px;border-radius:6px;border:1px solid #25282e;z-index:3}
+.legend{position:absolute;left:10px;bottom:10px;display:flex;gap:7px;align-items:center;font-size:9px;color:var(--muted);background:#0009;padding:6px 8px;border-radius:6px;border:1px solid #25282e;z-index:3}
+.sw{width:8px;height:8px;border-radius:2px;display:inline-block}.sw.free{background:#242831}.sw.taken{background:#777f8c}
+footer{font-size:9px;color:#555b65;text-align:center;padding:6px 0 0}
+@media(max-width:650px){.page{padding:10px}.hero{display:block}.count{text-align:left;margin-top:8px}.intro{max-width:92%}.hint{max-width:190px;line-height:1.35}.wall{min-height:0}.legend{display:none}}
 </style>
 </head>
 <body>
 <div class="page">
-<header><div><div class="brand">THE INTERNET WALL</div><div class="tag">Own a piece of the Internet.</div></div><div class="live"><i class="dot"></i>LIVE PROTOTYPE</div></header>
-<section class="hero"><div><p class="eyebrow">1,000,000 DIGITAL PARCELS</p><h1>A wall built by the Internet.</h1><p class="intro">Explore the prototype. Zoom, move around and select a parcel.</p></div><div class="count"><b>0</b><span>/ 1,000,000 claimed</span></div></section>
-<div class="toolbar"><div class="hint">Glisse pour explorer · Pince pour zoomer · Touche une parcelle</div><div class="buttons"><button id="plus">+</button><button id="minus">−</button><button id="reset">Reset</button></div></div>
-<div class="wall" id="wall"><canvas id="canvas"></canvas><div class="zoom" id="zoom">72%</div></div>
-<footer>Prototype v0.1 · The Internet Wall</footer>
+<header>
+  <div><div class="brand">THE INTERNET WALL</div><div class="tag">Own a piece of the Internet.</div></div>
+  <div class="live"><i class="dot"></i>LIVE PROTOTYPE</div>
+</header>
+
+<section class="hero">
+  <div><p class="eyebrow">1,000,000 DIGITAL PARCELS</p><h1>A wall built by the Internet.</h1><p class="intro">Explore the wall. Zoom in, move around and select a parcel.</p></div>
+  <div class="count"><b id="claimed">12</b><span>/ 1,000,000 claimed</span></div>
+</section>
+
+<div class="toolbar">
+  <div class="hint">Glisse · pince pour zoomer · touche une parcelle</div>
+  <div class="buttons"><button id="plus">+</button><button id="minus">−</button><button class="reset" id="reset">Reset</button></div>
 </div>
+
+<div class="wall" id="wall">
+  <canvas id="canvas"></canvas>
+  <div class="zoom" id="zoom">72%</div>
+  <div class="legend"><span class="sw free"></span> Disponible <span class="sw taken"></span> Exemple occupé</div>
+</div>
+<footer>Prototype v0.2 · The Internet Wall</footer>
+</div>
+
 <script>
-const GRID=1000, c=document.getElementById('canvas'), wrap=document.getElementById('wall'), ctx=c.getContext('2d');
-let s={z:.72,x:0,y:0,down:false,lx:0,ly:0,moved:0}, selected=null;
-function size(){let r=wrap.getBoundingClientRect(),d=Math.min(devicePixelRatio||1,2);c.width=r.width*d;c.height=r.height*d;draw()}
-function pos(){let r=wrap.getBoundingClientRect(),w=r.width,h=r.height,ww=GRID*s.z,hh=GRID*s.z;return{x:(w-ww)/2+s.x,y:(h-hh)/2+s.y}}
-function draw(){
- let r=wrap.getBoundingClientRect(),d=Math.min(devicePixelRatio||1,2),w=r.width,h=r.height;
- ctx.setTransform(d,0,0,d,0,0);ctx.clearRect(0,0,w,h);ctx.fillStyle='#090a0d';ctx.fillRect(0,0,w,h);
- let p=pos(),cell=s.z;ctx.fillStyle='#111318';ctx.fillRect(p.x,p.y,GRID*cell,GRID*cell);
- ctx.strokeStyle='rgba(255,255,255,.07)';ctx.lineWidth=1;ctx.beginPath();
- let step=cell>=2.5?1:Math.max(10,Math.round(40/cell));
- for(let i=0;i<=GRID;i+=step){let x=p.x+i*cell;ctx.moveTo(x,Math.max(0,p.y));ctx.lineTo(x,Math.min(h,p.y+GRID*cell));let y=p.y+i*cell;ctx.moveTo(Math.max(0,p.x),y);ctx.lineTo(Math.min(w,p.x+GRID*cell),y)}ctx.stroke();
- const demo=[{x:112,y:178,w:18,h:10,t:'JB'},{x:420,y:260,w:30,h:12,t:'THE WALL'},{x:735,y:620,w:22,h:14,t:'∞'}];
- for(const q of demo){let x=p.x+q.x*cell,y=p.y+q.y*cell;ctx.fillStyle='rgba(255,255,255,.12)';ctx.fillRect(x,y,q.w*cell,q.h*cell);if(cell>=3.5){ctx.fillStyle='rgba(255,255,255,.55)';ctx.font=Math.max(9,Math.min(18,cell*2.5))+'px system-ui';ctx.fillText(q.t,x+5,y+Math.min(q.h*cell-4,18))}}
- if(selected){let x=p.x+selected.x*cell,y=p.y+selected.y*cell;ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.strokeRect(x+1,y+1,Math.max(cell-2,2),Math.max(cell-2,2))}
- ctx.strokeStyle='rgba(255,255,255,.35)';ctx.strokeRect(p.x+.5,p.y+.5,GRID*cell-1,GRID*cell-1);document.getElementById('zoom').textContent=Math.round(s.z*100)+'%';
+const GRID=1000, canvas=document.getElementById('canvas'), wall=document.getElementById('wall'), ctx=canvas.getContext('2d');
+let state={z:.72,x:0,y:0,drag:false,lx:0,ly:0,moved:0,pinch:false,pinchStart:0,pinchZoom:.72};
+let selected=null;
+
+const occupied=[
+ {x:112,y:178,w:18,h:10,id:'000178112',label:'Demo Studio'},
+ {x:420,y:260,w:30,h:12,id:'000260420',label:'The Wall'},
+ {x:735,y:620,w:22,h:14,id:'000620735',label:'∞ Project'},
+ {x:520,y:455,w:10,h:10,id:'000455520',label:'Pixel Lab'},
+ {x:260,y:690,w:15,h:8,id:'000690260',label:'Future'},
+ {x:820,y:210,w:12,h:18,id:'000210820',label:'Creator'},
+ {x:610,y:780,w:20,h:9,id:'000780610',label:'Open Space'},
+ {x:80,y:760,w:13,h:13,id:'000760080',label:'Founding Parcel'},
+ {x:900,y:880,w:16,h:7,id:'000880900',label:'Last Horizon'},
+ {x:340,y:90,w:11,h:11,id:'000090340',label:'North'},
+ {x:160,y:420,w:20,h:6,id:'000420160',label:'Signal'},
+ {x:680,y:350,w:9,h:17,id:'000350680',label:'Studio'}
+];
+
+function resize(){
+ const r=wall.getBoundingClientRect(),d=Math.min(devicePixelRatio||1,2);
+ canvas.width=Math.floor(r.width*d);canvas.height=Math.floor(r.height*d);draw();
 }
-function cellAt(cx,cy){let r=wrap.getBoundingClientRect(),p=pos(),x=Math.floor((cx-r.left-p.x)/s.z),y=Math.floor((cy-r.top-p.y)/s.z);return x>=0&&y>=0&&x<GRID&&y<GRID?{x,y}:null}
-c.addEventListener('pointerdown',e=>{s.down=true;s.lx=e.clientX;s.ly=e.clientY;s.moved=0;c.setPointerCapture(e.pointerId);wrap.classList.add('drag')});
-c.addEventListener('pointermove',e=>{if(!s.down)return;let dx=e.clientX-s.lx,dy=e.clientY-s.ly;s.x+=dx;s.y+=dy;s.lx=e.clientX;s.ly=e.clientY;s.moved+=Math.abs(dx)+Math.abs(dy);draw()});
-c.addEventListener('pointerup',e=>{if(!s.down)return;s.down=false;wrap.classList.remove('drag');if(s.moved<8){selected=cellAt(e.clientX,e.clientY);showInfo()}});
-c.addEventListener('pointercancel',()=>{s.down=false;wrap.classList.remove('drag')});
-c.addEventListener('wheel',e=>{e.preventDefault();let before=cellAt(e.clientX,e.clientY),old=s.z,r=wrap.getBoundingClientRect(),p=pos(),factor=e.deltaY<0?1.18:1/1.18;s.z=Math.max(.55,Math.min(24,s.z*factor));if(before){let px=p.x+(before.x+.5)*old,py=p.y+(before.y+.5)*old,nw=GRID*s.z,nh=GRID*s.z,bx=(r.width-nw)/2,by=(r.height-nh)/2;s.x=e.clientX-r.left-bx-(px-p.x)*(s.z/old);s.y=e.clientY-r.top-by-(py-p.y)*(s.z/old)}draw()},{passive:false});
-function showInfo(){let old=document.querySelector('.info');if(old)old.remove();if(!selected)return;let d=document.createElement('div');d.className='info';let n=selected.y*GRID+selected.x+1;d.innerHTML='<small>PARCEL SELECTED</small><div class="id">#'+String(n).padStart(7,'0')+'</div><div class="coords">X '+(selected.x+1)+' · Y '+(selected.y+1)+'</div><div class="note">Available in the future version.</div><button>Fermer</button>';d.querySelector('button').onclick=()=>{d.remove();selected=null;draw()};wrap.appendChild(d);draw()}
-document.getElementById('plus').onclick=()=>{s.z=Math.min(24,s.z*1.25);draw()};document.getElementById('minus').onclick=()=>{s.z=Math.max(.55,s.z/1.25);draw()};document.getElementById('reset').onclick=()=>{s={...s,z:.72,x:0,y:0,down:false};selected=null;document.querySelector('.info')?.remove();draw()};
-window.addEventListener('resize',size);size();
+function wallOrigin(){
+ const r=wall.getBoundingClientRect(),ww=GRID*state.z,hh=GRID*state.z;
+ return {x:(r.width-ww)/2+state.x,y:(r.height-hh)/2+state.y};
+}
+function draw(){
+ const r=wall.getBoundingClientRect(),d=Math.min(devicePixelRatio||1,2),w=r.width,h=r.height;
+ ctx.setTransform(d,0,0,d,0,0);ctx.clearRect(0,0,w,h);
+ const p=wallOrigin(),cell=state.z;
+ ctx.fillStyle='#090a0d';ctx.fillRect(0,0,w,h);
+ ctx.fillStyle='#111318';ctx.fillRect(p.x,p.y,GRID*cell,GRID*cell);
+
+ const step=cell>=2.2?1:Math.max(10,Math.round(42/cell));
+ ctx.strokeStyle='rgba(255,255,255,.065)';ctx.lineWidth=1;ctx.beginPath();
+ for(let i=0;i<=GRID;i+=step){
+   let x=p.x+i*cell;ctx.moveTo(x,Math.max(0,p.y));ctx.lineTo(x,Math.min(h,p.y+GRID*cell));
+   let y=p.y+i*cell;ctx.moveTo(Math.max(0,p.x),y);ctx.lineTo(Math.min(w,p.x+GRID*cell),y);
+ }
+ ctx.stroke();
+
+ for(const q of occupied){
+   const x=p.x+q.x*cell,y=p.y+q.y*cell;
+   ctx.fillStyle='rgba(150,158,170,.20)';ctx.fillRect(x,y,q.w*cell,q.h*cell);
+   if(cell>=3.5){
+     ctx.fillStyle='rgba(240,243,247,.72)';
+     ctx.font=Math.max(9,Math.min(16,cell*2.1))+'px system-ui';
+     ctx.fillText(q.label,x+4,y+Math.min(q.h*cell-3,15));
+   }
+ }
+ if(selected){
+   const x=p.x+selected.x*cell,y=p.y+selected.y*cell;
+   ctx.strokeStyle='#fff';ctx.lineWidth=2;
+   ctx.strokeRect(x+1,y+1,Math.max(cell-2,2),Math.max(cell-2,2));
+ }
+ ctx.strokeStyle='rgba(255,255,255,.35)';ctx.strokeRect(p.x+.5,p.y+.5,GRID*cell-1,GRID*cell-1);
+ document.getElementById('zoom').textContent=Math.round(state.z*100)+'%';
+}
+function pointToCell(cx,cy){
+ const r=wall.getBoundingClientRect(),p=wallOrigin(),x=Math.floor((cx-r.left-p.x)/state.z),y=Math.floor((cy-r.top-p.y)/state.z);
+ return x>=0&&y>=0&&x<GRID&&y<GRID?{x,y}:null;
+}
+function getOccupied(cell){
+ if(!cell)return null;
+ return occupied.find(q=>cell.x>=q.x&&cell.x<q.x+q.w&&cell.y>=q.y&&cell.y<q.y+q.h)||null;
+}
+function selectAt(cx,cy){
+ selected=pointToCell(cx,cy);showSelection();draw();
+}
+function showSelection(){
+ document.querySelector('.selection')?.remove();
+ if(!selected)return;
+ const q=getOccupied(selected), num=selected.y*GRID+selected.x+1;
+ const box=document.createElement('div');box.className='selection';
+ box.innerHTML='<small>PARCEL SELECTED</small><div class="id">#'+String(num).padStart(7,'0')+'</div><div class="coords">X '+(selected.x+1)+' · Y '+(selected.y+1)+'</div><div class="badge">'+(q?'EXEMPLE OCCUPÉ':'DISPONIBLE')+'</div><div class="desc">'+(q?'Cette parcelle est occupée dans le prototype par « '+q.label+' ».':'Cette parcelle est disponible. Dans la prochaine version, elle pourra être réservée puis achetée.')+'</div><button>Fermer</button>';
+ box.querySelector('button').onclick=()=>{selected=null;box.remove();draw()};
+ wall.appendChild(box);
+}
+function zoomAt(clientX,clientY,factor){
+ const r=wall.getBoundingClientRect(),before=pointToCell(clientX,clientY),old=state.z,oldP=wallOrigin();
+ const px=before?oldP.x+(before.x+.5)*old:clientX-r.left,py=before?oldP.y+(before.y+.5)*old:clientY-r.top;
+ state.z=Math.max(.55,Math.min(24,state.z*factor));
+ const nw=GRID*state.z,nh=GRID*state.z,bx=(r.width-nw)/2,by=(r.height-nh)/2;
+ if(before){state.x=clientX-r.left-bx-(px-oldP.x)*(state.z/old);state.y=clientY-r.top-by-(py-oldP.y)*(state.z/old)}
+ draw();
+}
+canvas.addEventListener('pointerdown',e=>{
+ state.drag=true;state.lx=e.clientX;state.ly=e.clientY;state.moved=0;
+ canvas.setPointerCapture(e.pointerId);wall.classList.add('drag');
+});
+canvas.addEventListener('pointermove',e=>{
+ if(!state.drag||state.pinch)return;
+ const dx=e.clientX-state.lx,dy=e.clientY-state.ly;
+ state.x+=dx;state.y+=dy;state.lx=e.clientX;state.ly=e.clientY;state.moved+=Math.abs(dx)+Math.abs(dy);draw();
+});
+canvas.addEventListener('pointerup',e=>{
+ if(!state.drag)return;
+ state.drag=false;wall.classList.remove('drag');
+ if(state.moved<8)selectAt(e.clientX,e.clientY);
+});
+canvas.addEventListener('pointercancel',()=>{state.drag=false;state.pinch=false;wall.classList.remove('drag')});
+
+let touches=new Map();
+canvas.addEventListener('touchstart',e=>{
+ if(e.touches.length===2){
+   e.preventDefault();state.pinch=true;state.drag=false;
+   const a=e.touches[0],b=e.touches[1];
+   state.pinchStart=Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY);state.pinchZoom=state.z;
+ }
+},{passive:false});
+canvas.addEventListener('touchmove',e=>{
+ if(e.touches.length!==2||!state.pinch)return;
+ e.preventDefault();const a=e.touches[0],b=e.touches[1];
+ const dist=Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY),centerX=(a.clientX+b.clientX)/2,centerY=(a.clientY+b.clientY)/2;
+ const factor=dist/state.pinchStart;state.z=Math.max(.55,Math.min(24,state.pinchZoom*factor));draw();
+},{passive:false});
+canvas.addEventListener('touchend',e=>{if(e.touches.length<2)state.pinch=false},{passive:false});
+canvas.addEventListener('wheel',e=>{e.preventDefault();zoomAt(e.clientX,e.clientY,e.deltaY<0?1.18:1/1.18)},{passive:false});
+
+document.getElementById('plus').onclick=()=>zoomAt(wall.getBoundingClientRect().left+wall.clientWidth/2,wall.getBoundingClientRect().top+wall.clientHeight/2,1.25);
+document.getElementById('minus').onclick=()=>zoomAt(wall.getBoundingClientRect().left+wall.clientWidth/2,wall.getBoundingClientRect().top+wall.clientHeight/2,1/1.25);
+document.getElementById('reset').onclick=()=>{state={z:.72,x:0,y:0,drag:false,lx:0,ly:0,moved:0,pinch:false,pinchStart:0,pinchZoom:.72};selected=null;document.querySelector('.selection')?.remove();draw()};
+window.addEventListener('resize',resize);resize();
 </script>
 </body>
 </html>
