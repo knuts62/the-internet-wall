@@ -54,6 +54,471 @@
       color: #58a6ff;
     }
     .main-heading {
+      font-size: 17px;
+      font-weight: 700;
+      color: #f0f6fc;
+      margin-top: 4px;
+    }
+    .main-sub {
+      font-size: 11px;
+      color: #8b949e;
+    }
+    .counter-block {
+      margin: 6px 0;
+    }
+    .counter-num {
+      font-size: 22px;
+      font-weight: 800;
+      color: #3fb950;
+      display: inline-block;
+    }
+    .counter-total {
+      font-size: 11px;
+      color: #8b949e;
+      display: inline-block;
+      margin-left: 4px;
+    }
+    .hint-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      pointer-events: auto;
+    }
+    .hint-text {
+      font-size: 11px;
+      color: #6e7681;
+    }
+    .btn-group {
+      display: flex;
+      gap: 6px;
+    }
+    .btn {
+      background: #161b22;
+      border: 1px solid #30363d;
+      color: #c9d1d9;
+      font-size: 12px;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .btn:active { background: #21262d; }
+
+    canvas {
+      display: block;
+      width: 100vw;
+      height: 100vh;
+      background: #0b0f14;
+      touch-action: none;
+    }
+
+    #card {
+      position: absolute;
+      top: 180px; left: 16px; right: 16px;
+      max-width: 320px;
+      background: rgba(22, 27, 34, 0.96);
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      padding: 16px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+      display: none;
+      z-index: 20;
+    }
+    #card.visible { display: block; }
+    .card-label { font-size: 10px; color: #8b949e; text-transform: uppercase; letter-spacing: 0.5px; }
+    .card-id { font-size: 20px; font-weight: 800; color: #f0f6fc; margin: 2px 0; }
+    .card-coords { font-size: 11px; color: #8b949e; margin-bottom: 8px; }
+    .card-badge {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .card-badge.disponible { background: #21262d; border: 1px solid #30363d; color: #3fb950; }
+    .card-badge.occupe { background: rgba(56, 139, 253, 0.2); border: 1px solid #388bfd; color: #58a6ff; }
+    .card-badge.owner { background: rgba(235, 179, 56, 0.2); border: 1px solid #e3b341; color: #f2cc60; }
+    .card-img-preview {
+      width: 100%;
+      max-height: 140px;
+      object-fit: contain;
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      margin-bottom: 10px;
+    }
+    .card-desc { font-size: 12px; color: #c9d1d9; line-height: 1.4; margin-bottom: 10px; }
+    .card-link { color: #58a6ff; text-decoration: none; font-size: 12px; display: block; margin-bottom: 12px; word-break: break-all; }
+    
+    .btn-action {
+      width: 100%;
+      background: #238636;
+      border: none;
+      color: #fff;
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-bottom: 8px;
+    }
+    .btn-action.edit-mode { background: #d29922; }
+    .btn-action:disabled { background: #555; cursor: not-allowed; }
+    .btn-action:active:not(:disabled) { opacity: 0.9; }
+    .btn-close {
+      width: 100%;
+      background: #21262d;
+      border: 1px solid #30363d;
+      color: #8b949e;
+      padding: 8px;
+      border-radius: 6px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.75);
+      backdrop-filter: blur(4px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 50;
+      padding: 20px;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal-box {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 360px;
+      padding: 20px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .modal-box h3 { font-size: 16px; margin-bottom: 14px; color: #f0f6fc; }
+    .input-label { font-size: 11px; color: #8b949e; margin-bottom: 4px; display: block; }
+    .input-field {
+      width: 100%;
+      background: #0d1117;
+      border: 1px solid #30363d;
+      color: #fff;
+      padding: 10px;
+      border-radius: 6px;
+      margin-bottom: 12px;
+      font-size: 13px;
+    }
+    .input-field:focus { outline: 1px solid #58a6ff; }
+  </style>
+</head>
+<body>
+
+  <div id="ui-container">
+    <div class="top-bar">
+      <div class="brand-title">The Internet Wall</div>
+      <button class="auth-btn" id="auth-header-btn" onclick="openAuthModal()">Connexion</button>
+    </div>
+
+    <div class="main-heading">A wall built by the Internet.</div>
+    <div class="main-sub">Explore the wall. Zoom in, move around and select a parcel.</div>
+
+    <div class="counter-block">
+      <span class="counter-num" id="counter-num">...</span>
+      <span class="counter-total">/ 1,000,000 claimed</span>
+    </div>
+
+    <div class="hint-bar">
+      <div class="hint-text">Glisse · pince pour zoomer · touche une parcelle</div>
+      <div class="btn-group">
+        <button class="btn" onclick="zoomIn()">+</button>
+        <button class="btn" onclick="zoomOut()">-</button>
+        <button class="btn" onclick="resetView()">Reset</button>
+      </div>
+    </div>
+  </div>
+
+  <canvas id="wall"></canvas>
+
+  <!-- Fiche Parcelle -->
+  <div id="card">
+    <div class="card-label">Parcel Selected</div>
+    <div class="card-id" id="modal-id">#0000000</div>
+    <div class="card-coords" id="modal-coords">X 0 · Y 0</div>
+    <div class="card-badge disponible" id="modal-badge">DISPONIBLE</div>
+    <img id="card-img" class="card-img-preview" src="" style="display:none;" alt="Logo parcelle">
+    <div class="card-desc" id="modal-desc">Cette parcelle est libre.</div>
+    <a class="card-link" id="modal-link" href="#" target="_blank" style="display:none;">Visiter le lien →</a>
+    <button class="btn-action" id="modal-btn-claim" onclick="startClaim()">Réserver cette parcelle</button>
+    <button class="btn-close" onclick="closeCard()">Fermer</button>
+  </div>
+
+  <!-- Modal Auth -->
+  <div class="modal-overlay" id="modal-auth">
+    <div class="modal-box">
+      <h3 id="auth-title">Connexion / Inscription</h3>
+      <input type="email" id="auth-email" class="input-field" placeholder="Ton adresse email">
+      <input type="password" id="auth-pass" class="input-field" placeholder="Mot de passe (min 6 caractères)">
+      <button class="btn-action" id="btn-auth-submit" onclick="handleAuthSubmit()">Valider</button>
+      <button class="btn-close" onclick="closeAuthModal()">Annuler</button>
+    </div>
+  </div>
+
+  <!-- Modal Réservation -->
+  <div class="modal-overlay" id="modal-claim">
+    <div class="modal-box">
+      <h3 id="claim-modal-title">Réserver la parcelle <span id="claim-parcel-id"></span></h3>
+      
+      <label class="input-label">Titre / Nom :</label>
+      <input type="text" id="claim-title" class="input-field" placeholder="Ex: Mon Projet">
+      
+      <label class="input-label">Lien Web :</label>
+      <input type="url" id="claim-link" class="input-field" placeholder="https://monsite.com">
+      
+      <label class="input-label">Description :</label>
+      <input type="text" id="claim-desc" class="input-field" placeholder="Petite description">
+
+      <label class="input-label">Logo / Image (optionnel) :</label>
+      <input type="file" id="claim-file" class="input-field" accept="image/*">
+
+      <button class="btn-action" id="btn-claim-submit" onclick="submitParcel()">Confirmer la réservation</button>
+      <button class="btn-close" onclick="closeClaimModal()">Annuler</button>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script>
+    const GRID_SIZE = 1000;
+    const PARCEL_SIZE = 16;
+    const TOTAL_WIDTH = GRID_SIZE * PARCEL_SIZE;
+    const TOTAL_HEIGHT = GRID_SIZE * PARCEL_SIZE;
+
+    const canvas = document.getElementById('wall');
+    const ctx = canvas.getContext('2d');
+
+    let parcelsMap = new Map();
+    let imageCache = new Map();
+    let camera = { x: 0, y: 0, zoom: 0.35 };
+    let selected = null;
+    let currentUser = null;
+    let dbClient = null;
+
+    if (typeof SUPABASE_URL !== 'undefined' && typeof SUPABASE_ANON_KEY !== 'undefined' && window.supabase) {
+      dbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    }
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      draw();
+    }
+    window.addEventListener('resize', resize);
+
+    async function checkAuth() {
+      if (!dbClient) return;
+      const { data: { session } } = await dbClient.auth.getSession();
+      currentUser = session ? session.user : null;
+      updateAuthUI();
+
+      dbClient.auth.onAuthStateChange((_event, session) => {
+        currentUser = session ? session.user : null;
+        updateAuthUI();
+      });
+    }
+
+    function updateAuthUI() {
+      const btn = document.getElementById('auth-header-btn');
+      if (currentUser) {
+        btn.textContent = currentUser.email.split('@')[0];
+        btn.className = "auth-btn logged-in";
+      } else {
+        btn.textContent = "Connexion";
+        btn.className = "auth-btn";
+      }
+    }
+
+    async function fetchParcels() {
+      if (!dbClient) return;
+      try {
+        const { data, error } = await dbClient.from('parcels').select('*');
+        if (error) throw error;
+        parcelsMap.clear();
+        data.forEach(p => {
+          parcelsMap.set(`${p.x},${p.y}`, p);
+          if (p.image_url && !imageCache.has(p.image_url)) {
+            const img = new Image();
+            img.src = p.image_url;
+            img.onload = () => draw();
+            imageCache.set(p.image_url, img);
+          }
+        });
+        document.getElementById('counter-num').textContent = data.length;
+        draw();
+      } catch (err) {
+        console.error("Erreur Supabase:", err.message);
+      }
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.save();
+      ctx.translate(camera.x, camera.y);
+      ctx.scale(camera.zoom, camera.zoom);
+
+      ctx.fillStyle = '#0e141e';
+      ctx.fillRect(0, 0, TOTAL_WIDTH, TOTAL_HEIGHT);
+
+      ctx.strokeStyle = '#2d3748';
+      ctx.lineWidth = 4 / camera.zoom;
+      ctx.strokeRect(0, 0, TOTAL_WIDTH, TOTAL_HEIGHT);
+
+      if (camera.zoom > 0.15) {
+        ctx.strokeStyle = '#1a2230';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        const step = camera.zoom > 0.4 ? PARCEL_SIZE : PARCEL_SIZE * 5;
+        for (let x = 0; x <= TOTAL_WIDTH; x += step) {
+          ctx.moveTo(x, 0); ctx.lineTo(x, TOTAL_HEIGHT);
+        }
+        for (let y = 0; y <= TOTAL_HEIGHT; y += step) {
+          ctx.moveTo(0, y); ctx.lineTo(TOTAL_WIDTH, y);
+        }
+        ctx.stroke();
+      }
+
+      for (const [key, p] of parcelsMap) {
+        const px = p.x * PARCEL_SIZE;
+        const py = p.y * PARCEL_SIZE;
+
+        ctx.fillStyle = 'rgba(56, 139, 253, 0.12)';
+        ctx.fillRect(px - PARCEL_SIZE * 3, py - PARCEL_SIZE * 2, PARCEL_SIZE * 7, PARCEL_SIZE * 5);
+
+        const img = p.image_url ? imageCache.get(p.image_url) : null;
+        if (img && img.complete && img.naturalWidth !== 0) {
+          ctx.drawImage(img, px, py, PARCEL_SIZE, PARCEL_SIZE);
+        } else {
+          ctx.fillStyle = '#f0f6fc';
+          ctx.fillRect(px, py, PARCEL_SIZE, PARCEL_SIZE);
+        }
+
+        if (camera.zoom > 0.3) {
+          ctx.font = 'bold 12px sans-serif';
+          ctx.fillStyle = '#8b949e';
+          ctx.fillText(p.title || 'Occupé', px - 20, py - 8);
+        }
+      }
+
+      if (selected) {
+        ctx.strokeStyle = '#58a6ff';
+        ctx.lineWidth = 3 / camera.zoom;
+        ctx.strokeRect(selected.x * PARCEL_SIZE, selected.y * PARCEL_SIZE, PARCEL_SIZE, PARCEL_SIZE);
+      }
+
+      ctx.restore();
+    }
+
+    function zoomIn() { zoomAt(window.innerWidth/2, window.innerHeight/2, 1.25); }
+    function zoomOut() { zoomAt(window.innerWidth/2, window.innerHeight/2, 0.8); }
+    function resetView() {
+      camera.zoom = 0.35;
+      camera.x = window.innerWidth / 2 - (750 * PARCEL_SIZE * camera.zoom);
+      camera.y = window.innerHeight / 2 - (633 * PARCEL_SIZE * camera.zoom);
+      draw();
+    }
+
+    function zoomAt(cx, cy, factor) {
+      const newZoom = Math.min(Math.max(camera.zoom * factor, 0.05), 6);
+      camera.x = cx - (cx - camera.x) * (newZoom / camera.zoom);
+      camera.y = cy - (cy - camera.y) * (newZoom / camera.zoom);
+      camera.zoom = newZoom;
+      draw();
+    }
+
+    let isDragging = false;
+    let dragStart = { x: 0, y: 0 };
+    let hasMoved = false;
+
+    canvas.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      zoomAt(e.clientX, e.clientY, e.deltaY < 0 ? 1.1 : 0.9);
+    }, { passive: false });
+
+    canvas.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      hasMoved = false;
+      dragStart = { x: e.clientX - camera.x, y: e.clientY - camera.y };
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+      hasMoved = true;
+      camera.x = e.clientX - dragStart.x;
+      camera.y = e.clientY - dragStart.y;
+      draw();
+    });
+
+    window.addEventListener('mouseup', (e) => {
+      if (isDragging && !hasMoved) handleTap(e.clientX, e.clientY);
+      isDragging = false;
+    });
+
+    let touchMode = 'none';
+    let lastTouch = { x: 0, y: 0 };
+    let lastPinchDist = 0;
+
+    canvas.addEventListener('touchstart', (e) => {
+      if (e.touches.length === 1) {
+        touchMode = 'pan';
+        hasMoved = false;
+        lastTouch = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      } else if (e.touches.length === 2) {
+        touchMode = 'pinch';
+        hasMoved = true;
+        lastPinchDist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+      }
+    }, { passive: true });
+
+    canvas.addEventListener('touchmove', (e) => {
+      if (e.touches.length === 1 && touchMode === 'pan') {
+        const dx = e.touches[0].clientX - lastTouch.x;
+        const dy = e.touches[0].clientY - lastTouch.y;
+        if (Math.abs(dx) > 3 || Math.abs(dy) > 3) hasMoved = true;
+        camera.x += dx;
+        camera.y += dy;
+        lastTouch = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        draw();
+      } else if (e.touches.length === 2) {
+        const dist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+        if (lastPinchDist > 0) {
+          const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+          const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+          zoomAt(midX, midY, 1 + (dist / lastPinchDist - 1) * 0.6);
+        }
+        lastPinchDist = dist;
+      }
+    }, { passiv      text-transform: uppercase;
+      color: #ffffff;
+    }
+    .auth-btn {
+      pointer-events: auto;
+      background: #238636;
+      border: 1px solid rgba(255,255,255,0.1);
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 5px 12px;
+      border-radius: 20px;
+      cursor: pointer;
+    }
+    .auth-btn.logged-in {
+      background: #21262d;
+      border-color: #30363d;
+      color: #58a6ff;
+    }
+    .main-heading {
       f      text-transform: uppercase;
       color: #ffffff;
     }
